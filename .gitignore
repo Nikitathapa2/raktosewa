@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+# https://dart.dev/guides/libraries/private-files
+# Created by `dart pub`
+.dart_tool/
+=======
+>>>>>>> sprint1
 # Miscellaneous
 *.class
 *.log
@@ -43,3 +51,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+<<<<<<< HEAD
+=======
+>>>>>>> 1aeb0d2 (Initial project setup)
+>>>>>>> sprint1
