@@ -1,11 +1,19 @@
 name: raktosewa
+<<<<<<< HEAD
 description: A sample command-line application.
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
+=======
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+>>>>>>> 1aeb0d2 (Initial project setup)
 
 environment:
   sdk: ^3.9.2
 
+<<<<<<< HEAD
 # Add regular dependencies here.
 dependencies:
   path: ^1.9.0
@@ -13,3 +21,20 @@ dependencies:
 dev_dependencies:
   lints: ^6.0.0
   test: ^1.25.6
+=======
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+>>>>>>> 1aeb0d2 (Initial project setup)
