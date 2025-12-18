@@ -1,22 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:raktosewa/widgets/upcoming_camp.dart';
+import '../widgets/top_profile.dart';
+import '../widgets/search_box.dart';
+import '../widgets/banner_card.dart';
+import '../widgets/activity_section.dart';
+import '../widgets/blood_group_section.dart';
+import '../widgets/emergency_card.dart';
+import '../widgets/contribution_section.dart';
+import 'package:raktosewa/widgets/custom_navbar.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Raktosewa Home'), centerTitle: true),
-      body: Center(
-        child: Text(
-          'Welcome to Raktosewa Home!',
-          style: TextStyle(
-            fontSize: screenWidth * 0.06,
-            fontWeight: FontWeight.bold,
+      backgroundColor: const Color(0xFFFFFFFF),
+
+      bottomNavigationBar: CustomNavBar(),
+
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TopProfile(),
+              SizedBox(height: 20),
+              SearchBox(),
+              SizedBox(height: 20),
+              BannerCard(),
+              SizedBox(height: 25),
+              ActivitySection(),
+              SizedBox(height: 25),
+              BloodGroupSection(),
+              SizedBox(height: 25),
+              EmergencyCard(),
+              SizedBox(height: 25),
+              ContributionSection(),
+              SizedBox(height: 25),
+              UpcomingCamps(),
+            ],
           ),
-          textAlign: TextAlign.center,
         ),
       ),
     );
