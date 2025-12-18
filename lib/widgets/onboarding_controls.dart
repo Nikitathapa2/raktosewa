@@ -28,7 +28,12 @@ class OnboardingControls extends StatelessWidget {
               width: currentPage == index ? 24 : 8,
               height: 8,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(currentPage == index ? 1 : 0.5),
+                color: const Color.from(
+                  alpha: 1,
+                  red: 1,
+                  green: 1,
+                  blue: 1,
+                ).withOpacity(currentPage == index ? 1 : 0.5),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
