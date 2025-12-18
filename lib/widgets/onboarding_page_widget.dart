@@ -32,7 +32,7 @@ class OnboardingPageWidget extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: Colors.white,
+              color: const Color.fromRGBO(255, 255, 255, 1),
               fontSize: screenWidth * 0.08,
               fontWeight: FontWeight.bold,
             ),
