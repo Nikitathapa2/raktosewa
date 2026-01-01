@@ -26,11 +26,9 @@ class DonorRepositoryImpl implements DonorRepository {
   ) async {
     try {
       final result = await localDataSource.loginDonor(email, password);
-      if (result != null) {
-        return Right(result);
-      }
+      return Right(result);
     } catch (e) {
-      return Left(LocalDatabaseFailure());
+      return Left(LocalDatabaseFailure(message: e.toString()));
     }
   }
 
