@@ -8,7 +8,7 @@ class RegisterDonor {
 
   RegisterDonor(this.repository);
 
-  Future<Either<Failures, Donor>> execute(Donor donor) {
+  Future<Either<Failures, bool>> execute(Donor donor) {
     return repository.registerDonor(donor);
   }
 }

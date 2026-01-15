@@ -8,7 +8,7 @@ class RegisterOrganization {
 
   RegisterOrganization(this.repository);
 
-  Future<Either<Failures, Organization>> execute(Organization organization) {
+  Future<Either<Failures, bool>> execute(Organization organization) {
     return repository.registerOrganization(organization);
   }
 }
