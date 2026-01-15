@@ -9,48 +9,123 @@ class OrganizationModel extends HiveObject {
   final String id;
 
   @HiveField(1)
-  final String name;
+  final String organizationName;
 
   @HiveField(2)
-  final String email;
+  final String headOfOrganization;
 
   @HiveField(3)
-  final String phone;
+  final String email;
 
   @HiveField(4)
-  final String address;
+  final String? phoneNumber;
 
   @HiveField(5)
+  final String? address;
+
+  @HiveField(6)
   final String password;
+
+  @HiveField(7)
+  final String? confirmPassword;
+
+  @HiveField(8)
+  final bool? terms;
+
+  @HiveField(9)
+  final String? role;
+
+  @HiveField(10)
+  final bool? isEmailVerified;
+
+  @HiveField(11)
+  final String? googleId;
+
+  @HiveField(12)
+  final String? googleProfilePicture;
 
   OrganizationModel({
     required this.id,
-    required this.name,
+    required this.organizationName,
+    required this.headOfOrganization,
     required this.email,
-    required this.phone,
-    required this.address,
+    this.phoneNumber,
+    this.address,
     required this.password,
+    this.confirmPassword,
+    this.terms,
+    this.role,
+    this.isEmailVerified,
+    this.googleId,
+    this.googleProfilePicture,
   });
 
   factory OrganizationModel.fromEntity(Organization organization) {
     return OrganizationModel(
       id: organization.id,
-      name: organization.name,
+      organizationName: organization.organizationName,
+      headOfOrganization: organization.headOfOrganization,
       email: organization.email,
-      phone: organization.phone,
+      phoneNumber: organization.phoneNumber,
       address: organization.address,
       password: organization.password,
+      confirmPassword: organization.confirmPassword,
+      terms: organization.terms,
+      role: organization.role,
+      isEmailVerified: organization.isEmailVerified,
+      googleId: organization.googleId,
+      googleProfilePicture: organization.googleProfilePicture,
     );
   }
 
   Organization toEntity() {
     return Organization(
       id: id,
-      name: name,
+      organizationName: organizationName,
+      headOfOrganization: headOfOrganization,
       email: email,
-      phone: phone,
+      phoneNumber: phoneNumber,
       address: address,
       password: password,
+      confirmPassword: confirmPassword,
+      terms: terms ?? false,
+      role: role ?? "user",
+      isEmailVerified: isEmailVerified ?? false,
+      googleId: googleId,
+      googleProfilePicture: googleProfilePicture,
+    );
+  }
+
+  /// Copy with
+  OrganizationModel copyWith({
+    String? id,
+    String? organizationName,
+    String? headOfOrganization,
+    String? email,
+    String? phoneNumber,
+    String? address,
+    String? password,
+    String? confirmPassword,
+    bool? terms,
+    String? role,
+    bool? isEmailVerified,
+    String? googleId,
+    String? googleProfilePicture,
+  }) {
+    return OrganizationModel(
+      id: id ?? this.id,
+      organizationName: organizationName ?? this.organizationName,
+      headOfOrganization: headOfOrganization ?? this.headOfOrganization,
+      email: email ?? this.email,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      address: address ?? this.address,
+      password: password ?? this.password,
+      confirmPassword: confirmPassword ?? this.confirmPassword,
+      terms: terms ?? this.terms,
+      role: role ?? this.role,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+      googleId: googleId ?? this.googleId,
+      googleProfilePicture: googleProfilePicture ?? this.googleProfilePicture,
     );
   }
 }

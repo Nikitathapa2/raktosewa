@@ -6,4 +6,5 @@ abstract class IOrganizationLocalDataSource {
   Future<Organization?> getOrganizationById(String id);
   Future<bool> updateOrganization(Organization organization);
   Future<bool> deleteOrganization(String id);
+  Future<bool> logout();
 }
