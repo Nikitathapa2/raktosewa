@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:raktosewa/screens/home_screen.dart';
+import 'package:raktosewa/features/dashboard/presentation/pages/dashboard_screen.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -67,7 +67,7 @@ class _LoginFormState extends State<LoginForm> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
+                MaterialPageRoute(builder: (context) => const DashboardScreen()),
               );
             },
             child: const Text(
