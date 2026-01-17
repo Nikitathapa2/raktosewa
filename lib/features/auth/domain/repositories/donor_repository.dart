@@ -4,7 +4,7 @@ import '../entities/donor.dart';
 
 abstract class DonorRepository {
   /// Registers a new donor
-  Future<Either<Failures, Donor>> registerDonor(Donor donor);
+  Future<Either<Failures, bool>> registerDonor(Donor donor);
 
   /// Login donor using email and password
   Future<Either<Failures, Donor>> loginDonor(String email, String password);
@@ -14,4 +14,6 @@ abstract class DonorRepository {
 
   /// Update donor profile
   Future<Either<Failures, Donor>> updateDonorProfile(Donor donor);
+
+  Future<Either<Failures, bool>> logout();
 }

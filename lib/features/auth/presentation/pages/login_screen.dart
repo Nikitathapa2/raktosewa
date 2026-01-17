@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:raktosewa/core/utils/snackbar_utils.dart';
 import 'package:raktosewa/features/auth/presentation/providers/donor_providers.dart';
+import 'package:raktosewa/features/auth/presentation/providers/organization_providers.dart';
 import 'package:raktosewa/features/auth/presentation/state/donor_state.dart';
+import 'package:raktosewa/features/auth/presentation/state/organization_state.dart';
 import 'package:raktosewa/screens/hive_screen.dart';
-import 'package:raktosewa/screens/register_form.dart';
+import 'package:raktosewa/features/dashboard/presentation/pages/dashboard_screen.dart';
+import 'package:raktosewa/features/auth/presentation/pages/register_form.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -15,46 +19,86 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   String userType = "donor";
   bool showPassword = false;
+  bool _isSubmitting = false;
+  DateTime? _lastSubmit;
+  static const _submitCooldown = Duration(seconds: 2);
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   void _login() async {
-    if (userType == "donor") {
-      // Call donor login from DonorViewModel
-      await ref
-          .read(donorViewModelProvider.notifier)
-          .loginDonor(
-            emailController.text.trim(),
-            passwordController.text.trim(),
-          );
+    final now = DateTime.now();
+    if (_isSubmitting) return; // Prevent rapid repeat taps while in-flight
+    if (_lastSubmit != null && now.difference(_lastSubmit!) < _submitCooldown) {
+      SnackbarUtils.showWarning(context, "Please wait a moment before retrying");
+      return;
+    }
+    setState(() => _isSubmitting = true);
 
-      final state = ref.read(donorViewModelProvider);
-      if (state.status == AuthStatus.success) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Login Successful")));
-        // Navigate to Hive screen or Dashboard
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const DonorHiveScreen()),
-        );
-      } else if (state.status == AuthStatus.error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.errorMessage ?? "Login Failed")),
-        );
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      SnackbarUtils.showWarning(context, "Please fill in all fields");
+      setState(() => _isSubmitting = false);
+      return;
+    }
+
+    try {
+      if (userType == "donor") {
+        // Call donor login from DonorViewModel
+        await ref
+            .read(donorViewModelProvider.notifier)
+            .loginDonor(
+              emailController.text.trim(),
+              passwordController.text.trim(),
+            );
+
+        final state = ref.read(donorViewModelProvider);
+        if (state.status == AuthStatus.success) {
+          SnackbarUtils.showSuccess(context, "Login Successful");
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DashboardScreen()),
+            );
+          }
+        } else if (state.status == AuthStatus.error) {
+          SnackbarUtils.showError(context, state.errorMessage ?? "Login Failed");
+        }
+      } else if (userType == "organization") {
+        // Call organization login from OrganizationViewModel
+        await ref
+            .read(organizationViewModelProvider.notifier)
+            .loginOrganization(
+              emailController.text.trim(),
+              passwordController.text.trim(),
+            );
+
+        final state = ref.read(organizationViewModelProvider);
+        if (state.status == AuthStatus.success) {
+          SnackbarUtils.showSuccess(context, "Login Successful");
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DashboardScreen()),
+            );
+          }
+        } else if (state.status == AuthStatus.error) {
+          SnackbarUtils.showError(context, state.errorMessage ?? "Login Failed");
+        }
       }
-    } else {
-      // TODO: Implement organization login
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Organization login not implemented yet")),
-      );
+    } finally {
+      _lastSubmit = now;
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final donorState = ref.read(donorViewModelProvider);
+    final donorState = ref.watch(donorViewModelProvider);
+    final organizationState = ref.watch(organizationViewModelProvider);
+    final isLoading = _isSubmitting ||
+      (userType == "donor"
+        ? donorState.status == AuthStatus.loading
+        : organizationState.status == AuthStatus.loading);
 
     double screenWidth = MediaQuery.of(context).size.width;
 
@@ -133,11 +177,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed:
-                                    donorState.status == AuthStatus.loading
-                                    ? null
-                                    : _login,
-                                child: donorState.status == AuthStatus.loading
+                                onPressed: isLoading ? null : _login,
+                                child: isLoading
                                     ? const SizedBox(
                                         width: 20,
                                         height: 20,

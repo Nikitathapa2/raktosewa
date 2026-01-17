@@ -3,7 +3,7 @@ import '../../../../core/error/failures.dart';
 import '../entities/organization.dart';
 
 abstract class OrganizationRepository {
-  Future<Either<Failures, Organization>> registerOrganization(
+  Future<Either<Failures, bool>> registerOrganization(
     Organization organization,
   );
 
@@ -17,4 +17,6 @@ abstract class OrganizationRepository {
   Future<Either<Failures, Organization>> updateOrganization(
     Organization organization,
   );
+
+  Future<Either<Failures, bool>> logout();
 }

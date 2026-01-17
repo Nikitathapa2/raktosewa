@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:raktosewa/core/utils/snackbar_utils.dart';
 import 'package:raktosewa/features/auth/domain/entities/donor.dart';
+import 'package:raktosewa/features/auth/domain/entities/organization.dart';
+import 'package:raktosewa/features/auth/presentation/pages/login_screen.dart';
 import 'package:raktosewa/features/auth/presentation/providers/donor_providers.dart';
+import 'package:raktosewa/features/auth/presentation/providers/organization_providers.dart';
 import 'package:raktosewa/features/auth/presentation/state/donor_state.dart';
-import 'package:raktosewa/screens/hive_screen.dart';
+import 'package:raktosewa/features/auth/presentation/state/organization_state.dart';
 import 'package:raktosewa/widgets/primary_button.dart';
 
 class DonorRegisterScreen extends ConsumerStatefulWidget {
@@ -24,6 +28,8 @@ class _DonorRegisterScreenState extends ConsumerState<DonorRegisterScreen> {
 
   // Controllers
   final fullNameController = TextEditingController();
+  final organizationNameController = TextEditingController();
+  final headOfOrganizationController = TextEditingController();
   final bloodGroupController = TextEditingController();
   final dobController = TextEditingController();
   final emailController = TextEditingController();
@@ -35,6 +41,8 @@ class _DonorRegisterScreenState extends ConsumerState<DonorRegisterScreen> {
   @override
   void dispose() {
     fullNameController.dispose();
+    organizationNameController.dispose();
+    headOfOrganizationController.dispose();
     bloodGroupController.dispose();
     dobController.dispose();
     emailController.dispose();
@@ -49,21 +57,33 @@ class _DonorRegisterScreenState extends ConsumerState<DonorRegisterScreen> {
   Widget build(BuildContext context) {
     // Listen to DonorState changes
     ref.listen<DonorState>(donorViewModelProvider, (previous, next) {
-      if (next.status == AuthStatus.success) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Login Successful")));
+      if (next.status == AuthStatus.success && userType == "donor") {
+        SnackbarUtils.showSuccess(context, "Registration Successful");
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const DonorHiveScreen()),
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       }
 
-      if (next.status == AuthStatus.error && next.errorMessage != null) {
-        ScaffoldMessenger.of(
+      if (next.status == AuthStatus.error && next.errorMessage != null && userType == "donor") {
+        SnackbarUtils.showError(context, next.errorMessage!);
+      }
+    });
+
+    // Listen to OrganizationState changes
+    ref.listen<OrganizationState>(organizationViewModelProvider, (previous, next) {
+      if (next.status == AuthStatus.success && userType == "organization") {
+        SnackbarUtils.showSuccess(context, "Registration Successful");
+
+        Navigator.pushReplacement(
           context,
-        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+          MaterialPageRoute(builder: (_) =>  const LoginScreen()),
+        );
+      }
+
+      if (next.status == AuthStatus.error && next.errorMessage != null && userType == "organization") {
+        SnackbarUtils.showError(context, next.errorMessage!);
       }
     });
 
@@ -83,19 +103,33 @@ class _DonorRegisterScreenState extends ConsumerState<DonorRegisterScreen> {
                 _inputField("Full Name", fullNameController),
                 _dropdownBloodGroup(),
                 _datePicker(),
+                _inputField(
+                  "Email",
+                  emailController,
+                  keyboard: TextInputType.emailAddress,
+                ),
+                _inputField(
+                  "Phone Number",
+                  phoneController,
+                  keyboard: TextInputType.phone,
+                ),
+                _inputField("Address", addressController),
+              ] else if (userType == "organization") ...[
+                _inputField("Organization Name", organizationNameController),
+                _inputField("Head of Organization", headOfOrganizationController),
+                _inputField(
+                  "Email",
+                  emailController,
+                  keyboard: TextInputType.emailAddress,
+                ),
+                _inputField(
+                  "Phone Number",
+                  phoneController,
+                  keyboard: TextInputType.phone,
+                  required: false,
+                ),
+                _inputField("Address", addressController, required: false),
               ],
-
-              _inputField(
-                "Email",
-                emailController,
-                keyboard: TextInputType.emailAddress,
-              ),
-              _inputField(
-                "Phone Number",
-                phoneController,
-                keyboard: TextInputType.phone,
-              ),
-              _inputField("Address", addressController),
               _passwordField(
                 "Password",
                 passwordController,
@@ -192,6 +226,7 @@ class _DonorRegisterScreenState extends ConsumerState<DonorRegisterScreen> {
     String label,
     TextEditingController controller, {
     TextInputType keyboard = TextInputType.text,
+    bool required = true,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -202,8 +237,9 @@ class _DonorRegisterScreenState extends ConsumerState<DonorRegisterScreen> {
           labelText: label,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        validator: (value) =>
-            value == null || value.isEmpty ? "Required field" : null,
+        validator: required
+            ? (value) => value == null || value.isEmpty ? "Required field" : null
+            : null,
       ),
     );
   }
@@ -286,25 +322,48 @@ class _DonorRegisterScreenState extends ConsumerState<DonorRegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (!termsAccepted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please accept terms")));
+      SnackbarUtils.showWarning(context, "Please accept terms");
       return;
     }
 
-    // Construct Donor object
-    final donor = Donor(
-      fullName: fullNameController.text.trim(),
-      bloodGroup: bloodGroupController.text.trim(),
-      dob: dobController.text.trim(),
-      email: emailController.text.trim(),
-      phone: phoneController.text.trim(),
-      address: addressController.text.trim(),
-      password: passwordController.text.trim(),
-      id: '',
-    );
+    if (passwordController.text != confirmPasswordController.text) {
+      SnackbarUtils.showWarning(context, "Passwords do not match");
+      return;
+    }
 
-    // Call DonorViewModel to register
-    ref.read(donorViewModelProvider.notifier).registerDonor(donor);
+    if (userType == "donor") {
+      // Construct Donor object
+      final donor = Donor(
+        fullName: fullNameController.text.trim(),
+        bloodGroup: bloodGroupController.text.trim(),
+        dob: dobController.text.trim(),
+        email: emailController.text.trim(),
+        phone: phoneController.text.trim(),
+        address: addressController.text.trim(),
+        password: passwordController.text.trim(),
+        confirmPassword: confirmPasswordController.text.trim(),
+        terms: termsAccepted,
+        id: '',
+      );
+
+      // Call DonorViewModel to register
+      ref.read(donorViewModelProvider.notifier).registerDonor(donor);
+    } else if (userType == "organization") {
+      // Construct Organization object
+      final organization = Organization(
+        organizationName: organizationNameController.text.trim(),
+        headOfOrganization: headOfOrganizationController.text.trim(),
+        email: emailController.text.trim(),
+        phoneNumber: phoneController.text.trim().isNotEmpty ? phoneController.text.trim() : null,
+        address: addressController.text.trim().isNotEmpty ? addressController.text.trim() : null,
+        password: passwordController.text.trim(),
+        confirmPassword: confirmPasswordController.text.trim(),
+        terms: termsAccepted,
+        id: '',
+      );
+
+      // Call OrganizationViewModel to register
+      ref.read(organizationViewModelProvider.notifier).registerOrganization(organization);
+    }
   }
 }

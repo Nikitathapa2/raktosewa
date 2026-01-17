@@ -1,59 +1,104 @@
-// lib/features/auth/data/datasources/local/donor_local_datasource_impl.dart
-import 'package:hive/hive.dart';
+import 'package:raktosewa/core/services/hive/hive_service.dart';
+import 'package:raktosewa/core/services/storage/user_session_service.dart';
 import '../../models/donor_model.dart';
-import '../donor_local_datasource.dart';
+import '../donor_datasource.dart';
 import '../../../domain/entities/donor.dart';
 
 class DonorLocalDataSourceImpl implements IDonorLocalDataSource {
-  final Box<DonorModel> donorBox;
+  final DonorHiveService _hiveService;
+  final UserSessionService _userSessionService;
 
-  DonorLocalDataSourceImpl(this.donorBox);
+  DonorLocalDataSourceImpl(
+    this._hiveService,
+    this._userSessionService,
+  );
 
+  // ================= REGISTER =================
   @override
   Future<Donor> registerDonor(Donor donor) async {
+    // Check if donor with same email already exists
+    final existingDonors = _hiveService
+        .getAllDonors()
+        .where((d) => d.email == donor.email)
+        .toList();
+
+    if (existingDonors.isNotEmpty) {
+      // Update existing donor instead of creating duplicate
+      final existingModel = existingDonors.first;
+      final updatedModel = DonorModel.fromEntity(donor).copyWith(id: existingModel.id);
+      await _hiveService.updateDonor(updatedModel);
+      return updatedModel.toEntity();
+    }
+
     final model = DonorModel.fromEntity(donor);
-    await donorBox.put(model.id, model);
+    await _hiveService.createDonor(model);
     return model.toEntity();
   }
 
+  // ================= LOGIN =================
   @override
   Future<Donor> loginDonor(String email, String password) async {
-    // Filter users by email
-    final usersWithEmail = donorBox.values
-        .where((u) => u.email == email)
+    final donors = _hiveService
+        .getAllDonors()
+        .where((d) => d.email == email)
         .toList();
 
-    if (usersWithEmail.isEmpty) {
+    if (donors.isEmpty) {
       throw Exception("No account found with this email");
     }
 
-    // Check password
-    final model = usersWithEmail.firstWhere(
-      (u) => u.password == password,
+    final donorModel = donors.firstWhere(
+      (d) => d.password == password,
       orElse: () => throw Exception("Invalid password"),
     );
 
-    return model.toEntity();
+    final donor = donorModel.toEntity();
+
+    // Save session (similar to recruiter login)
+    await _userSessionService.saveUserSession(
+      userId: donor.id,
+      email: donor.email,
+      firstName: donor.fullName,
+      lastName: "",
+      role: UserRole.donor,
+      profilePicture: null,
+    );
+
+    return donor;
   }
 
+  // ================= GET BY ID =================
   @override
   Future<Donor?> getDonorById(String id) async {
-    final model = donorBox.get(id);
+    final model = _hiveService.getDonorById(id);
     return model?.toEntity();
   }
 
+  // ================= UPDATE =================
   @override
   Future<bool> updateDonor(Donor donor) async {
-    if (!donorBox.containsKey(donor.id)) return false;
+    final existing = _hiveService.getDonorById(donor.id);
+    if (existing == null) return false;
+
     final model = DonorModel.fromEntity(donor);
-    await donorBox.put(donor.id, model);
+    await _hiveService.updateDonor(model);
     return true;
   }
 
+  // ================= DELETE =================
   @override
   Future<bool> deleteDonor(String id) async {
-    if (!donorBox.containsKey(id)) return false;
-    await donorBox.delete(id);
+    final existing = _hiveService.getDonorById(id);
+    if (existing == null) return false;
+
+    await _hiveService.deleteDonor(id);
+    return true;
+  }
+
+  // ================= LOGOUT =================
+  @override
+  Future<bool> logout() async {
+    await _userSessionService.clearSession();
     return true;
   }
 }

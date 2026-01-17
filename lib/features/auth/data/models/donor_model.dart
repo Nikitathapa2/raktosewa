@@ -15,29 +15,37 @@ class DonorModel extends HiveObject {
   final String bloodGroup;
 
   @HiveField(3)
-  final String dob;
+  final String? dob;
 
   @HiveField(4)
   final String email;
 
   @HiveField(5)
-  final String phone;
+  final String? phone;
 
   @HiveField(6)
-  final String address;
+  final String? address;
 
   @HiveField(7)
   final String password;
+
+  @HiveField(8)
+  final String? confirmPassword;
+
+  @HiveField(9)
+  final bool? terms;
 
   DonorModel({
     required this.id,
     required this.fullName,
     required this.bloodGroup,
-    required this.dob,
+    this.dob,
     required this.email,
-    required this.phone,
-    required this.address,
+    this.phone,
+    this.address,
     required this.password,
+    this.confirmPassword,
+    this.terms,
   });
 
   /// Convert from Entity
@@ -51,6 +59,8 @@ class DonorModel extends HiveObject {
       phone: donor.phone,
       address: donor.address,
       password: donor.password,
+      confirmPassword: donor.confirmPassword,
+      terms: donor.terms,
     );
   }
 
@@ -65,6 +75,35 @@ class DonorModel extends HiveObject {
       phone: phone,
       address: address,
       password: password,
+      confirmPassword: confirmPassword,
+      terms: terms ?? false,
+    );
+  }
+
+  /// Copy with
+  DonorModel copyWith({
+    String? id,
+    String? fullName,
+    String? bloodGroup,
+    String? dob,
+    String? email,
+    String? phone,
+    String? address,
+    String? password,
+    String? confirmPassword,
+    bool? terms,
+  }) {
+    return DonorModel(
+      id: id ?? this.id,
+      fullName: fullName ?? this.fullName,
+      bloodGroup: bloodGroup ?? this.bloodGroup,
+      dob: dob ?? this.dob,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      address: address ?? this.address,
+      password: password ?? this.password,
+      confirmPassword: confirmPassword ?? this.confirmPassword,
+      terms: terms ?? this.terms,
     );
   }
 }

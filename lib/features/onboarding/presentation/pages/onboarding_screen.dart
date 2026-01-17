@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:raktosewa/widgets/onboarding_controls.dart'
     show OnboardingControls;
 import 'package:raktosewa/widgets/onboarding_page_widget.dart';
-import 'login_screen.dart';
+import '../../../auth/presentation/pages/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

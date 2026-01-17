@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dartz/dartz.dart';
 import 'package:raktosewa/core/error/failures.dart';
+import 'package:raktosewa/features/auth/domain/usecases/logout_donor.dart';
 import '../../domain/entities/donor.dart';
 import '../../domain/usecases/register_donor.dart';
 import '../../domain/usecases/login_donor.dart';
@@ -10,11 +11,14 @@ import '../providers/donor_providers.dart';
 class DonorViewModel extends Notifier<DonorState> {
   late final RegisterDonor _registerDonor;
   late final LoginDonor _loginDonor;
+  late final LogoutUsecase _logoutUsecase;
 
   @override
   DonorState build() {
     _registerDonor = ref.read(registerDonorProvider);
     _loginDonor = ref.read(loginDonorProvider);
+    _logoutUsecase = ref.read(logoutDonorUsecaseProvider);
+
     return const DonorState();
   }
 
@@ -22,7 +26,7 @@ class DonorViewModel extends Notifier<DonorState> {
   Future<void> registerDonor(Donor donor) async {
     state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
 
-    final Either<Failures, Donor> result = await _registerDonor.execute(donor);
+    final Either<Failures, bool> result = await _registerDonor.execute(donor);
 
     result.fold(
       (failure) {
@@ -31,8 +35,8 @@ class DonorViewModel extends Notifier<DonorState> {
           errorMessage: failure.message,
         );
       },
-      (donor) {
-        state = state.copyWith(status: AuthStatus.success, donor: donor);
+      (success) {
+        state = state.copyWith(status: AuthStatus.success);
       },
     );
   }
@@ -58,4 +62,23 @@ class DonorViewModel extends Notifier<DonorState> {
       },
     );
   }
+
+    
+  Future<void> logout() async {
+    // Keep UI responsive on logout; no loading spinner
+    final result = await _logoutUsecase();
+
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: failure.message,
+      ),
+      (success) => state = state.copyWith(
+        status: AuthStatus.initial,
+        donor: null,
+        errorMessage: null,
+      ),
+    );
+  }
+
 }
