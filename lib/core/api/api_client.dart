@@ -88,7 +88,7 @@ class _AuthInterceptor extends Interceptor {
     //   ApiEndpoints.batches,
     //   ApiEndpoints
     // ];
-    final publicEndpoints = ['/talentusers', '/employerusers'];
+    final publicEndpoints = ['/donorusers', '/organizations'];
     final isPublicGet =
         options.method == 'GET' &&
         publicEndpoints.any((endpoint) => options.path.startsWith(endpoint));

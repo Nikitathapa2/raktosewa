@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:raktosewa/core/api/api_endpoints.dart';
 import 'package:raktosewa/core/services/storage/user_session_service.dart';
 
 class TopProfile extends ConsumerWidget {
@@ -11,12 +12,38 @@ class TopProfile extends ConsumerWidget {
     
     final userName = userSessionService.getCurrentUserFullName() ?? "Guest User";
     final userAddress = userSessionService.getUserAddress() ?? "Location not set";
+    final profilePath = userSessionService.getProfilePicture();
+    final profilePicURL = profilePath != null && profilePath.isNotEmpty 
+        ? ApiEndpoints.profilePicture(profilePath) 
+        : null;
 
     return Row(
       children: [
         CircleAvatar(
           radius: 28,
-          backgroundImage: AssetImage("assets/images/profile.png"),
+          child: ClipOval(
+            child: profilePicURL != null
+                    ? Image.network(
+                        profilePicURL,
+                        fit: BoxFit.cover,
+                        width: 56,
+                        height: 56,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            "assets/images/profile.png",
+                            fit: BoxFit.cover,
+                            width: 56,
+                            height: 56,
+                          );
+                        },
+                      )
+                    : Image.asset(
+                    "assets/images/profile.png",
+                    fit: BoxFit.cover,
+                    width: 56,
+                    height: 56,
+                  ),
+          ),
         ),
         SizedBox(width: 12),
         Expanded(

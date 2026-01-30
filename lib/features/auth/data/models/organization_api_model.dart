@@ -33,12 +33,19 @@ class OrganizationApiModel {
 
   // ================= JSON → MODEL =================
   factory OrganizationApiModel.fromJson(Map<String, dynamic> json) {
+    // Be defensive: backend may omit some fields during login
+    final idValue = json['_id'] ?? json['id'];
+    final orgNameValue = json['organizationName'] ?? json['name'] ?? '';
+    final headValue = json['headOfOrganization'] ?? '';
+    final emailValue = json['email'] ?? '';
+    final phoneValue = json['phoneNumber'] ?? json['phone'];
+
     return OrganizationApiModel(
-      id: json['_id'] as String?,
-      organizationName: json['organizationName'] as String,
-      headOfOrganization: json['headOfOrganization'] as String,
-      email: json['email'] as String,
-      phoneNumber: json['phoneNumber'] as String?,
+      id: idValue is String ? idValue : null,
+      organizationName: orgNameValue is String ? orgNameValue : orgNameValue.toString(),
+      headOfOrganization: headValue is String ? headValue : headValue.toString(),
+      email: emailValue is String ? emailValue : emailValue.toString(),
+      phoneNumber: phoneValue is String ? phoneValue : null,
       address: json['address'] as String?,
       role: json['role'] as String? ?? "user",
       isEmailVerified: json['isEmailVerified'] as bool? ?? false,

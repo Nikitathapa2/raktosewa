@@ -3,10 +3,10 @@ import '../entities/organization.dart';
 import '../repositories/organization_repository.dart';
 import '../../../../core/error/failures.dart';
 
-class RegisterOrganization {
+class RegisterOrganizationUsecase {
   final OrganizationRepository repository;
 
-  RegisterOrganization(this.repository);
+  RegisterOrganizationUsecase(this.repository);
 
   Future<Either<Failures, bool>> execute(Organization organization) {
     return repository.registerOrganization(organization);

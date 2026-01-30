@@ -32,6 +32,7 @@ class UserSessionService {
   static const String _keyUserRole = 'user_role';
   static const String _keyUserProfilePicture = 'user_profile_picture';
   static const String _keyUserAddress = 'user_address';
+  static const String _keyUserPhoneNumber = "user_phoneNumber";
 
   UserSessionService({required SharedPreferences prefs}) : _prefs = prefs;
 
@@ -41,6 +42,7 @@ class UserSessionService {
     required String email,
     required String firstName,
     required String lastName,
+     String? phoneNumber,
     required UserRole role,
     String? profilePicture,
     String? address,
@@ -51,6 +53,9 @@ class UserSessionService {
     await _prefs.setString(_keyUserFirstName, firstName);
     await _prefs.setString(_keyUserLastName, lastName);
     await _prefs.setString(_keyUserRole, role.name);
+    if (phoneNumber != null) {
+      await _prefs.setString(_keyUserPhoneNumber, phoneNumber);
+    }
 
     if (profilePicture != null) {
       await _prefs.setString(_keyUserProfilePicture, profilePicture);
@@ -93,7 +98,10 @@ class UserSessionService {
       orElse: () => UserRole.donor,
     );
   }
-
+  //phonenumnber
+   String? getCurrentUserPhoneNumber(){
+     return _prefs.getString(_keyUserPhoneNumber);
+   }
   /// Role helpers 
   bool isDonor() => getCurrentUserRole() == UserRole.donor;
 
@@ -102,6 +110,11 @@ class UserSessionService {
   /// Profile picture
   String? getProfilePicture() {
     return _prefs.getString(_keyUserProfilePicture);
+  }
+
+  /// Update profile picture URL
+  Future<void> updateProfilePicture(String url) async {
+    await _prefs.setString(_keyUserProfilePicture, url);
   }
 
   /// Address

@@ -1,5 +1,6 @@
 import 'package:raktosewa/core/services/hive/hive_service.dart';
 import 'package:raktosewa/core/services/storage/user_session_service.dart';
+import 'package:raktosewa/core/services/storage/token_service.dart';
 import '../../models/donor_model.dart';
 import '../donor_datasource.dart';
 import '../../../domain/entities/donor.dart';
@@ -7,10 +8,12 @@ import '../../../domain/entities/donor.dart';
 class DonorLocalDataSourceImpl implements IDonorLocalDataSource {
   final DonorHiveService _hiveService;
   final UserSessionService _userSessionService;
+  final TokenService _tokenService;
 
   DonorLocalDataSourceImpl(
     this._hiveService,
     this._userSessionService,
+    this._tokenService,
   );
 
   // ================= REGISTER =================
@@ -99,6 +102,7 @@ class DonorLocalDataSourceImpl implements IDonorLocalDataSource {
   @override
   Future<bool> logout() async {
     await _userSessionService.clearSession();
+    await _tokenService.clearToken();
     return true;
   }
 }

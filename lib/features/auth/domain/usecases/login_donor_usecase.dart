@@ -3,10 +3,10 @@ import '../entities/donor.dart';
 import '../repositories/donor_repository.dart';
 import '../../../../core/error/failures.dart';
 
-class LoginDonor {
+class LoginDonorUsecase {
   final DonorRepository repository;
 
-  LoginDonor(this.repository);
+  LoginDonorUsecase(this.repository);
 
   Future<Either<Failures, Donor>> execute(String email, String password) {
     return repository.loginDonor(email, password);

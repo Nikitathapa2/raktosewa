@@ -3,10 +3,10 @@ import '../entities/donor.dart';
 import '../repositories/donor_repository.dart';
 import '../../../../core/error/failures.dart';
 
-class RegisterDonor {
+class RegisterDonorUsecase {
   final DonorRepository repository;
 
-  RegisterDonor(this.repository);
+  RegisterDonorUsecase(this.repository);
 
   Future<Either<Failures, bool>> execute(Donor donor) {
     return repository.registerDonor(donor);

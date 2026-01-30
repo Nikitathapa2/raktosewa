@@ -27,6 +27,7 @@ class DonorModelAdapter extends TypeAdapter<DonorModel> {
       password: fields[7] as String,
       confirmPassword: fields[8] as String?,
       terms: fields[9] as bool?,
+      profilePicture: fields[10] as String?,
     );
   }
 
@@ -53,7 +54,9 @@ class DonorModelAdapter extends TypeAdapter<DonorModel> {
       ..writeByte(8)
       ..write(obj.confirmPassword)
       ..writeByte(9)
-      ..write(obj.terms);
+      ..write(obj.terms)
+      ..writeByte(10)
+      ..write(obj.profilePicture);
   }
 
   @override
