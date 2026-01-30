@@ -10,6 +10,7 @@ class DonorApiModel {
   final String? address;
   final String? password;
   final String? confirmPassword;
+  final String? profilePicture;
   final bool terms;
 
   DonorApiModel({
@@ -22,19 +23,21 @@ class DonorApiModel {
     this.address,
     this.password,
     this.confirmPassword,
+    this.profilePicture,
     this.terms = false,
   });
 
   // ================= JSON → MODEL =================
   factory DonorApiModel.fromJson(Map<String, dynamic> json) {
     return DonorApiModel(
-      id: json['_id'] as String?,
+      id: (json['_id'] ?? json['id']) as String?,
       fullName: json['fullName'] as String,
       bloodGroup: json['bloodGroup'] as String,
       dob: json['dob'] as String?,
       email: json['email'] as String,
       phone: json['phone'] as String?,
       address: json['address'] as String?,
+      profilePicture: json['profilePicture'] as String?,
       terms: json['terms'] as bool? ?? false,
     );
   }
@@ -53,7 +56,7 @@ class DonorApiModel {
     if (address != null) json["address"] = address!;
     if (password != null) json["password"] = password!;
     if (confirmPassword != null) json["confirmPassword"] = confirmPassword!;
-    
+    if (profilePicture != null) json["profilePicture"] = profilePicture!;
     return json;
   }
 
@@ -69,6 +72,7 @@ class DonorApiModel {
       address: address,
       password: password ?? '',
       confirmPassword: confirmPassword,
+      profilePicture: profilePicture,
       terms: terms,
     );
   }
@@ -85,6 +89,7 @@ class DonorApiModel {
       address: donor.address,
       password: donor.password,
       confirmPassword: donor.confirmPassword,
+      profilePicture: donor.profilePicture,
       terms: donor.terms,
     );
   }

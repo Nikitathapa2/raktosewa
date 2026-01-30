@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:raktosewa/core/services/connectivity/network_info.dart';
@@ -39,7 +41,7 @@ Future<Either<Failures, bool>> registerDonor(Donor donor) async {
       final name = registeredDonor.fullName.trim();
       final parts = name.split(' ');
       await _userSessionService.saveUserSession(
-        userId: registeredDonor.id!,
+        userId: registeredDonor.id ?? '',
         email: registeredDonor.email,
         firstName: parts.first,
         lastName: parts.length > 1 ? parts.sublist(1).join(' ') : '',
@@ -135,6 +137,19 @@ Future<Either<Failures, bool>> registerDonor(Donor donor) async {
       return const Right(true);
     } catch (e) {
       return Left(LocalDatabaseFailure(message: e.toString()));
+    }
+  }
+     @override
+  Future<Either<Failures, String>> uploadImage(File image) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final url = await _remoteDataSource.uploadImage(image);
+        return Right(url);
+      } catch (e) {
+        return Left(ApiFailure(message: e.toString()));
+      }
+    } else {
+      return const Left(NetworkFailure(message: 'No internet connection'));
     }
   }
 }

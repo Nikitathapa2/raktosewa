@@ -3,10 +3,10 @@ import '../entities/organization.dart';
 import '../repositories/organization_repository.dart';
 import '../../../../core/error/failures.dart';
 
-class LoginOrganization {
+class LoginOrganizationUsecase {
   final OrganizationRepository repository;
 
-  LoginOrganization(this.repository);
+  LoginOrganizationUsecase(this.repository);
 
   Future<Either<Failures, Organization>> execute(
     String email,

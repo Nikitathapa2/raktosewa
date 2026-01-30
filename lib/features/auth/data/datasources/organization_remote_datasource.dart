@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:raktosewa/features/auth/data/models/organization_api_model.dart';
 
 abstract class IOrganizationRemoteDataSource {
@@ -10,4 +12,7 @@ abstract class IOrganizationRemoteDataSource {
   Future<bool> updateOrganization(OrganizationApiModel organization);
   Future<bool> deleteOrganization(String id);
   Future<bool> logout();
+
+      Future<String> uploadImage(File image);
+
 }

@@ -1,24 +1,28 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dartz/dartz.dart';
+import 'dart:io';
 import '../../domain/entities/organization.dart';
-import '../../domain/usecases/register_organization.dart';
-import '../../domain/usecases/login_organization.dart';
-import '../../domain/usecases/logout_organization.dart';
+import '../../domain/usecases/register_organization_usecase.dart';
+import '../../domain/usecases/login_organization_usecase.dart';
+import '../../domain/usecases/logout_organization_usecase.dart';
 import '../state/donor_state.dart';
 import '../state/organization_state.dart';
 import '../../../../core/error/failures.dart';
 import '../providers/organization_providers.dart';
+import '../../domain/usecases/upload_organization_photo_usecase.dart';
 
 class OrganizationViewModel extends Notifier<OrganizationState> {
-  late final RegisterOrganization _registerOrganization;
-  late final LoginOrganization _loginOrganization;
+  late final RegisterOrganizationUsecase _registerOrganization;
+  late final LoginOrganizationUsecase _loginOrganization;
   late final LogoutOrganizationUsecase _logoutOrganizationUsecase;
+  late final UploadOrganizationPhotoUsecase _uploadOrganizationPhotoUsecase;
 
   @override
   OrganizationState build() {
     _registerOrganization = ref.read(registerOrganizationProvider);
     _loginOrganization = ref.read(loginOrganizationProvider);
     _logoutOrganizationUsecase = ref.read(logoutOrganizationUsecaseProvider);
+    _uploadOrganizationPhotoUsecase = ref.read(uploadOrganizationPhotoUsecaseProvider);
     return const OrganizationState();
   }
 
@@ -73,6 +77,21 @@ class OrganizationViewModel extends Notifier<OrganizationState> {
         status: AuthStatus.initial,
         organization: null,
         errorMessage: null,
+      ),
+    );
+  }
+
+  Future<void> uploadPhoto(File photo) async {
+    state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
+    final result = await _uploadOrganizationPhotoUsecase(photo);
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: failure.message,
+      ),
+      (photoUrl) => state = state.copyWith(
+        status: AuthStatus.success,
+        uploadedImageUrl: photoUrl,
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../entities/donor.dart';
@@ -16,4 +18,7 @@ abstract class DonorRepository {
   Future<Either<Failures, Donor>> updateDonorProfile(Donor donor);
 
   Future<Either<Failures, bool>> logout();
+
+      Future<Either<Failures, String>> uploadImage(File image);
+
 }
