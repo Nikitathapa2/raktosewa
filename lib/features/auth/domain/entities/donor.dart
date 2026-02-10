@@ -8,6 +8,7 @@ class Donor {
   final String? address;
   final String password; // Store hashed password in real app
   final String? confirmPassword;
+  final String? profilePicture;
   final bool terms;
 
   Donor({
@@ -20,6 +21,7 @@ class Donor {
     this.address,
     required this.password,
     this.confirmPassword,
+    this.profilePicture,
     this.terms = false,
   });
 }

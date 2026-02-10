@@ -1,4 +1,6 @@
 // lib/features/auth/data/datasources/donor_local_datasource.dart
+import 'dart:io';
+
 import 'package:raktosewa/features/auth/data/models/donor_api_model.dart';
 
 import '../../domain/entities/donor.dart';
@@ -12,6 +14,7 @@ abstract class IDonorLocalDataSource {
   Future<bool> deleteDonor(String id);
   Future<bool> logout();
 
+
 }
 
 
@@ -23,6 +26,8 @@ abstract class IDonorRemoteDataSource {
   Future<bool> updateDonor(DonorApiModel donor);
   Future<bool> deleteDonor(String id);
   Future<bool> logout();
+
+    Future<String> uploadImage(File image);
 
 
 }

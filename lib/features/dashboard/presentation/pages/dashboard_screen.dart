@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:raktosewa/core/services/storage/user_session_service.dart';
 import 'package:raktosewa/features/dashboard/presentation/pages/home_screen.dart';
-import 'package:raktosewa/features/dashboard/presentation/pages/profile_screen.dart';
+import 'package:raktosewa/features/profile/presentation/pages/donor_profile_screen.dart';
+import 'package:raktosewa/features/profile/presentation/pages/organization_profile_screen.dart';
 import 'package:raktosewa/widgets/custom_navbar.dart';
 
-class DashboardScreen extends StatefulWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _currentIndex = 0;
 
   late final List<Widget> _pages;
@@ -18,11 +21,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    final session = ref.read(userSessionServiceProvider);
+    final isDonor = session.isDonor();
     _pages = [
       HomeScreen(),
       _buildPlaceholderPage('Blood Requests', Icons.bloodtype),
       _buildPlaceholderPage('Notifications', Icons.notifications),
-      const ProfilePage(),
+      isDonor ? const DonorProfileScreen() : const OrganizationProfileScreen(),
     ];
   }
 

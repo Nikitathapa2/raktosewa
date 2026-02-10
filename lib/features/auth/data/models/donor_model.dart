@@ -35,6 +35,9 @@ class DonorModel extends HiveObject {
   @HiveField(9)
   final bool? terms;
 
+  @HiveField(10)
+  final String? profilePicture;
+
   DonorModel({
     required this.id,
     required this.fullName,
@@ -46,6 +49,7 @@ class DonorModel extends HiveObject {
     required this.password,
     this.confirmPassword,
     this.terms,
+    this.profilePicture,
   });
 
   /// Convert from Entity
@@ -61,6 +65,7 @@ class DonorModel extends HiveObject {
       password: donor.password,
       confirmPassword: donor.confirmPassword,
       terms: donor.terms,
+      profilePicture: donor.profilePicture,
     );
   }
 
@@ -76,6 +81,7 @@ class DonorModel extends HiveObject {
       address: address,
       password: password,
       confirmPassword: confirmPassword,
+      profilePicture: profilePicture,
       terms: terms ?? false,
     );
   }
@@ -92,6 +98,7 @@ class DonorModel extends HiveObject {
     String? password,
     String? confirmPassword,
     bool? terms,
+    String? profilePicture,
   }) {
     return DonorModel(
       id: id ?? this.id,
@@ -104,6 +111,7 @@ class DonorModel extends HiveObject {
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
       terms: terms ?? this.terms,
+      profilePicture: profilePicture ?? this.profilePicture,
     );
   }
 }

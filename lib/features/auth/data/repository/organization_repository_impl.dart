@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:raktosewa/core/services/connectivity/network_info.dart';
@@ -38,7 +40,7 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
         // Save user session after successful registration
         await _userSessionService.saveUserSession(
-          userId: registeredOrg.id!,
+          userId: registeredOrg.id ?? '',
           email: registeredOrg.email,
           firstName: registeredOrg.organizationName,
           lastName: '',
@@ -135,6 +137,20 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
       return const Right(true);
     } catch (e) {
       return Left(LocalDatabaseFailure(message: e.toString()));
+    }
+  }
+
+       @override
+  Future<Either<Failures, String>> uploadImage(File image) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final url = await _remoteDataSource.uploadImage(image);
+        return Right(url);
+      } catch (e) {
+        return Left(ApiFailure(message: e.toString()));
+      }
+    } else {
+      return const Left(NetworkFailure(message: 'No internet connection'));
     }
   }
 }

@@ -1,23 +1,31 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dartz/dartz.dart';
 import 'package:raktosewa/core/error/failures.dart';
-import 'package:raktosewa/features/auth/domain/usecases/logout_donor.dart';
+import 'package:raktosewa/features/auth/domain/usecases/logout_donor_usecase.dart';
+import 'package:raktosewa/features/auth/domain/usecases/upload_photo_params.dart';
+import 'package:raktosewa/features/auth/domain/usecases/upload_photo_usecase.dart';
 import '../../domain/entities/donor.dart';
-import '../../domain/usecases/register_donor.dart';
-import '../../domain/usecases/login_donor.dart';
+import '../../domain/usecases/register_donor_usecase.dart';
+import '../../domain/usecases/login_donor_usecase.dart';
 import '../state/donor_state.dart';
 import '../providers/donor_providers.dart';
 
 class DonorViewModel extends Notifier<DonorState> {
-  late final RegisterDonor _registerDonor;
-  late final LoginDonor _loginDonor;
-  late final LogoutUsecase _logoutUsecase;
+  late final RegisterDonorUsecase _registerDonor;
+  late final LoginDonorUsecase _loginDonor;
+  late final LogoutDonorUsecase _logoutUsecase;
+    late final UploadPhotoUsecase _uploadPhotoUsecase;
+
 
   @override
   DonorState build() {
     _registerDonor = ref.read(registerDonorProvider);
     _loginDonor = ref.read(loginDonorProvider);
     _logoutUsecase = ref.read(logoutDonorUsecaseProvider);
+        _uploadPhotoUsecase = ref.read(uploadPhotoUsecaseProvider);
+
 
     return const DonorState();
   }
@@ -78,6 +86,25 @@ class DonorViewModel extends Notifier<DonorState> {
         donor: null,
         errorMessage: null,
       ),
+    );
+  }
+
+
+   Future<void> uploadPhoto(File photo)async {
+    state = state.copyWith(status: AuthStatus.loading);
+
+    final result = await _uploadPhotoUsecase(UploadPhotoParams(photo: photo));
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: failure.message,
+      ),
+      (photoUrl) {
+        state = state.copyWith(
+          status: AuthStatus.loaded,
+          uploadedImageUrl: photoUrl,
+        );
+      },
     );
   }
 

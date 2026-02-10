@@ -8,15 +8,15 @@ import 'package:raktosewa/features/auth/presentation/providers/donor_providers.d
 
 
 // Create Provider
-final logoutDonorUsecaseProvider = Provider<LogoutUsecase>((ref) {
+final logoutDonorUsecaseProvider = Provider<LogoutDonorUsecase>((ref) {
   final donorRepository = ref.read(donorRepositoryProvider);
-  return LogoutUsecase(donorRepository: donorRepository);
+  return LogoutDonorUsecase(donorRepository: donorRepository);
 });
 
-class LogoutUsecase implements UsecaseWithoutParms<bool> {
+class LogoutDonorUsecase implements UsecaseWithoutParms<bool> {
   final DonorRepository _donorRepository;
 
-  LogoutUsecase({required DonorRepository donorRepository})
+  LogoutDonorUsecase({required DonorRepository donorRepository})
     : _donorRepository = donorRepository;
 
   @override

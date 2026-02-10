@@ -4,10 +4,9 @@ import 'package:raktosewa/core/utils/snackbar_utils.dart';
 import 'package:raktosewa/features/auth/presentation/providers/donor_providers.dart';
 import 'package:raktosewa/features/auth/presentation/providers/organization_providers.dart';
 import 'package:raktosewa/features/auth/presentation/state/donor_state.dart';
-import 'package:raktosewa/features/auth/presentation/state/organization_state.dart';
 import 'package:raktosewa/screens/hive_screen.dart';
 import 'package:raktosewa/features/dashboard/presentation/pages/dashboard_screen.dart';
-import 'package:raktosewa/features/auth/presentation/pages/register_form.dart';
+import 'package:raktosewa/features/auth/presentation/pages/register_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});

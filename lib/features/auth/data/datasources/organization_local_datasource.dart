@@ -1,3 +1,4 @@
+
 import '../../domain/entities/organization.dart';
 
 abstract class IOrganizationLocalDataSource {
@@ -7,4 +8,5 @@ abstract class IOrganizationLocalDataSource {
   Future<bool> updateOrganization(Organization organization);
   Future<bool> deleteOrganization(String id);
   Future<bool> logout();
+
 }
